@@ -1,7 +1,7 @@
 # NLP-Assignment-1
 
 Team members: 
-+ Mike
++ Mike ke Passo
 + Alex
 + Pere
 + Albert
