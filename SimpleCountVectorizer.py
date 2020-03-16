@@ -79,6 +79,11 @@ class SimpleCountVectorizer(sklearn.base.BaseEstimator, sklearn.base.Transformer
             return lambda word: word
         
     def tokenize(self, doc):
+        """
+        Transform a given document to a list of tokens
+        
+        :doc: The document that needs to be tokenized
+        """
         doc_cleaner      = self.build_doc_cleaner()
         doc_tokenizer    = self.build_tokenizer()
         doc     = doc_cleaner(doc)
@@ -87,6 +92,11 @@ class SimpleCountVectorizer(sklearn.base.BaseEstimator, sklearn.base.Transformer
         return words
         
     def fit(self, X):
+        """
+        Fit the CountVectorizer to a set of documents
+        
+        :X: A list of documents
+        """
 
         assert self.vocabulary == set(), "self.vocabulary is not empty it has {} words".format(len(self.vocabulary))
         assert isinstance(X,list), "X is expected to be a list of documents"
@@ -111,6 +121,11 @@ class SimpleCountVectorizer(sklearn.base.BaseEstimator, sklearn.base.Transformer
     
     
     def transform(self, X, memory_efficient=True):
+        """
+        Transform a given document to a list of tokens
+        
+        :doc: The document that needs to be tokenized
+        """
         
         doc_cleaner      = self.build_doc_cleaner()
         doc_tokenizer    = self.build_tokenizer()
@@ -133,9 +148,11 @@ class SimpleCountVectorizer(sklearn.base.BaseEstimator, sklearn.base.Transformer
                         sp_data.append(1)
                         
             encoded_X = sp.csr_matrix((sp_data, (row_indices, col_indices)), shape=(len(X), self.n_features))
+            
         else:
-            raise Not
-        ### You can try to do it if memory_efficient=False using np arrays
+            ### You can try to do it if memory_efficient=False using np arrays
+            raise NotImplementedError("memory_efficient=False not implemented")
+            
         return encoded_X
     
     def fit_transform(self, X, y=None):
@@ -155,6 +172,11 @@ class SimpleCountVectorizer(sklearn.base.BaseEstimator, sklearn.base.Transformer
         return X_words_in_vocab
     
     def detokenize(self, X):
+        """
+        Detokenize a document or a set of documents
+        
+        :X: It can be either a string or a list
+        """
         if isinstance(X, str):
             X = [X]        
         vals = [k for x in X for k, v in self.word_to_ind.items() if int(x)==int(v)]
