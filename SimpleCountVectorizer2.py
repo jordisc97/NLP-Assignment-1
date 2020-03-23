@@ -1,20 +1,12 @@
-#!/usr/bin/env python
-# coding: utf-8
-# %%
 import scipy
 import scipy.sparse as sp
+import numpy as np
 from nltk.stem import WordNetLemmatizer, SnowballStemmer
 from collections import defaultdict
-import re
 import sklearn
-import numpy as np
-
+import re
 stemmer =  SnowballStemmer(language='english')
 
-try:
-    from tqdm.notebook import tqdm
-except:
-    from tqdm import tqdm_notebook as tqdm
 
 class SimpleCountVectorizer(sklearn.base.BaseEstimator, sklearn.base.TransformerMixin):
     
@@ -79,11 +71,6 @@ class SimpleCountVectorizer(sklearn.base.BaseEstimator, sklearn.base.Transformer
             return lambda word: word
         
     def tokenize(self, doc):
-        """
-        Transform a given document to a list of tokens
-        
-        :doc: The document that needs to be tokenized
-        """
         doc_cleaner      = self.build_doc_cleaner()
         doc_tokenizer    = self.build_tokenizer()
         doc     = doc_cleaner(doc)
@@ -92,11 +79,6 @@ class SimpleCountVectorizer(sklearn.base.BaseEstimator, sklearn.base.Transformer
         return words
         
     def fit(self, X):
-        """
-        Fit the CountVectorizer to a set of documents
-        
-        :X: A list of documents
-        """
 
         assert self.vocabulary == set(), "self.vocabulary is not empty it has {} words".format(len(self.vocabulary))
         assert isinstance(X,list), "X is expected to be a list of documents"
@@ -107,25 +89,21 @@ class SimpleCountVectorizer(sklearn.base.BaseEstimator, sklearn.base.Transformer
         doc_tokenizer    = self.build_tokenizer()
         word_transformer = self.build_word_transformer()
         
-        for x in tqdm(X):            
-            for w in self.tokenize(x):
-                if w not in word_to_ind:                    
-                    word_to_ind[w]=i
-                    i+=1
-                       
-        self.word_to_ind = word_to_ind     
-        self.n_features = len(word_to_ind)        
-
-        self.vocabulary = set(word_to_ind.keys())   
+        for x in X:
+            words = doc_cleaner(x)
+            words = doc_tokenizer(words)
+            for word in words:
+                if word not in word_to_ind:
+                    word_to_ind[word] = i
+                    i += 1
+        self.word_to_ind = word_to_ind
+        self.n_features = len(word_to_ind)    
+                
+        self.vocabulary = set(word_to_ind.keys())
+                
         return self
     
-    
-    def transform(self, X, memory_efficient=True):
-        """
-        Transform a given document to a list of tokens
-        
-        :doc: The document that needs to be tokenized
-        """
+    def transform(self, X, memory_efficient=False):
         
         doc_cleaner      = self.build_doc_cleaner()
         doc_tokenizer    = self.build_tokenizer()
@@ -134,25 +112,30 @@ class SimpleCountVectorizer(sklearn.base.BaseEstimator, sklearn.base.Transformer
         col_indices = []
         row_indices = []
         sp_data     = []
-        
+                
         if memory_efficient:
-            encoded_X = None # Create an encoded_X
-            
-            assert isinstance(X,list), "You should pass a list"
-            
-            for m, doc in enumerate(X):
-                for w in self.tokenize(doc):
-                    if w in self.word_to_ind:
-                        row_indices.append(m)
-                        col_indices.append(self.word_to_ind[w])
-                        sp_data.append(1)
+            for m, x in enumerate(X):  
+                words = doc_cleaner(x)
+                words = doc_tokenizer(words)
+                for word in words: 
+                    index = self.word_to_ind[word]
+                    
+                    col_indices.append(index)
+                    row_indices.append(m)
+                    sp_data.append(1)
+                    
+            encoded_X = sp.csr_matrix((sp_data, (row_indices, col_indices)), shape = (len(X) ,self.n_features)) 
                         
-            encoded_X = sp.csr_matrix((sp_data, (row_indices, col_indices)), shape=(len(X), self.n_features))
-            
         else:
-            ### You can try to do it if memory_efficient=False using np arrays
-            raise NotImplementedError("memory_efficient=False not implemented")
             
+            encoded_X = np.zeros((len(X), len(self.word_to_ind)))
+            for m, x in enumerate(X):  
+                words = doc_cleaner(x)
+                words = doc_tokenizer(words)
+                for word in words: 
+                    index = self.word_to_ind[word]
+                    encoded_X[m, index] += 1
+        
         return encoded_X
     
     def fit_transform(self, X, y=None):
@@ -170,15 +153,3 @@ class SimpleCountVectorizer(sklearn.base.BaseEstimator, sklearn.base.Transformer
             X_words_in_vocab.append(self.tokenize(sentence))
             
         return X_words_in_vocab
-    
-    def detokenize(self, X):
-        """
-        Detokenize a document or a set of documents
-        
-        :X: It can be either a string or a list
-        """
-        if isinstance(X, str):
-            X = [X]        
-        vals = [k for x in X for k, v in self.word_to_ind.items() if int(x)==int(v)]
-        return vals
-
