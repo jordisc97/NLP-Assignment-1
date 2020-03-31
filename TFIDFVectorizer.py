@@ -3,6 +3,11 @@ import scipy as sp
 import time
 import sklearn.preprocessing
 
+try:
+    from tqdm.notebook import tqdm
+except:
+    from tqdm import tqdm_notebook as tqdm
+
 
 class TFIDFVectorizer():
     
@@ -77,8 +82,8 @@ class TFIDFVectorizer():
         """
         X_w = {}
 
-        for document in corpus:
-            words = self.tokenize(document)
+        for document in tqdm(corpus, desc="Building corpus: "):
+            words = set(self.tokenize(document))
             for word in words:
                 if word not in X_w: X_w[word] = 1
                 else: X_w[word] += 1
