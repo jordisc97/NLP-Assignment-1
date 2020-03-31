@@ -46,3 +46,24 @@ def hist_errors(mistake_indices, predictions,
     qs['P(1|x)']=clf.predict_proba(X_q1q2)[mistake_indices,:][:,1]
     qs = qs.reset_index(drop=True)
     return qs
+
+def find_same_tokens(df, vectorizer, verbose=False):
+    '''
+    Search pairs of questions (df rows) with same tokens using a vectorizer
+    regardless of their is_duplicate value and returns a list of booleans
+    stating whether that row has same tokens (between the two questions)
+    '''
+
+    q1_casted =  cast_list_as_strings(list(df["question1"]))
+    q2_casted =  cast_list_as_strings(list(df["question2"]))
+
+    q1 = vectorizer.transform(q1_casted)
+    q2 = vectorizer.transform(q2_casted)
+    
+    same_tokens_columns = []
+    for i in range(len(q1_casted)):
+        same_features = ( q1[i] != q2[i] ).nnz == 0
+        same_tokens_columns.append(same_features)
+        if i % 1000 == 0 and verbose: print(i)
+    
+    return same_tokens_columns
