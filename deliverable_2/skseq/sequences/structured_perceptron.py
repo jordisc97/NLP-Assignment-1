@@ -1,7 +1,7 @@
 from __future__ import division
 import numpy as np
 import skseq.sequences.discriminative_sequence_classifier as dsc
-#import skseq.sequences.sequence as seq
+import skseq.sequences.sequence as seq
 
 class StructuredPerceptron(dsc.DiscriminativeSequenceClassifier):
     """
@@ -41,8 +41,9 @@ class StructuredPerceptron(dsc.DiscriminativeSequenceClassifier):
         """
         if self.fitted:
             print("\n\tWarning: Model already trained")
-
-        for epoch in range(num_epochs):
+        
+        from tqdm.notebook import trange
+        for epoch in trange(num_epochs, desc="Fitting", leave=False):
             acc = self.fit_epoch(dataset)
             print("Epoch: %i Accuracy: %f" % (epoch, acc))
 
@@ -77,7 +78,8 @@ class StructuredPerceptron(dsc.DiscriminativeSequenceClassifier):
         num_labels_total = 0
         num_mistakes_total = 0
 
-        for i in range(num_examples):
+        from tqdm.notebook import trange
+        for i in trange(num_examples, desc="Epoch", leave=False):
             sequence = dataset.seq_list[i]
             num_labels, num_mistakes = self.perceptron_update(sequence)
             num_labels_total += num_labels
