@@ -89,7 +89,28 @@ class StructuredPerceptron(dsc.DiscriminativeSequenceClassifier):
         acc = 1.0 - num_mistakes_total / num_labels_total
         return acc
 
+    def word_in_corpus(phrase):
+        #phrase = phrase[0].split()
+        corpus = list(itertools.chain(*X_train_txt)) # Use train words
+        for i in range(len(phrase)):
+            if phrase[i] not in corpus:
+                print(phrase[i])
+                phrase[i] = edit_ditance_word(phrase[i])
+        return phrase
+    
+
+    def edit_ditance_word(mistake):
+        # mistake = "Barchelona" 
+        corpus = list(itertools.chain(*X_train_txt)) # Use train words
+        distances = []
+        for word in corpus:
+            ed = editdistance.eval(mistake, word)
+            distances.append(ed)
+        return corpus[np.argmin(distances)]
+
     def predict_tags_given_words(self, words):
+        ####################################3
+        
         sequence =  seq.Sequence(x=words, y=words)
         predicted_sequence, _ = self.viterbi_decode(sequence)
         return predicted_sequence.y

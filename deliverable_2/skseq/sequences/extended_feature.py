@@ -45,42 +45,6 @@ class ExtendedFeatures(IDFeatures):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 class ExtendedUnicodeFeatures(UnicodeFeatures):
 
     def add_emission_features(self, sequence, pos, y, features):
