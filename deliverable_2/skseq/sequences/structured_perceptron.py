@@ -112,6 +112,7 @@ class StructuredPerceptron(dsc.DiscriminativeSequenceClassifier):
         ####################################3
         
         sequence =  seq.Sequence(x=words, y=words)
+        print(sequence)
         predicted_sequence, _ = self.viterbi_decode(sequence)
         return predicted_sequence.y
 
