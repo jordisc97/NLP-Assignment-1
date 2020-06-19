@@ -131,10 +131,12 @@ class StructuredPerceptronValidation(dsc.DiscriminativeSequenceClassifier):
         return acc
 
     def predict_tags_given_words(self, words):
+        ######################
         sequence =  seq.Sequence(x=words, y=words)
         predicted_sequence, _ = self.viterbi_decode(sequence)
         return predicted_sequence.y
-
+    
+    
     def perceptron_update(self, sequence):
         """
         Method used to train the perceptron for a single datapoint.
