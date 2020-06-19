@@ -83,7 +83,7 @@ class HMM(object):
         self.n_states     = len(state_to_pos)
         self.n_words      = len(word_to_pos)
         self.fitted = False
-        self.hmm = pickle.load(open( "HMM.pkl", "rb" ))
+#         self.hmm = pickle.load(open( "HMM.pkl", "rb" ))
 
 
     def fit(self, observation_lables: list, state_labels: list):
@@ -185,7 +185,7 @@ class HMM(object):
         # log_f_x initialized to -Inf because log(0) = -Inf
         log_f_x = np.zeros((self.n_states, n_x)) - np.Inf
 #         hmm = pickle.load(open( "HMM.pkl", "rb" ))
-        x_emission_scores = np.array([self.hmm.scores['emission'][:, self.hmm.word_to_pos[w]] for w in x]).T
+        x_emission_scores = np.array([self.scores['emission'][:, self.word_to_pos[w]] for w in x]).T
         
         log_f_x[:,0] = x_emission_scores[:, 0] + self.scores['initial']
         for n in range(1, n_x):
@@ -202,7 +202,7 @@ class HMM(object):
         
         # log_f_x initialized to -Inf because log(0) = -Inf
         log_b_x = np.zeros((self.n_states, n_x)) - np.Inf
-        x_emission_scores = np.array([self.hmm.scores['emission'][:, self.hmm.word_to_pos[w]] for w in x]).T
+        x_emission_scores = np.array([self.scores['emission'][:, self.word_to_pos[w]] for w in x]).T
         log_b_x[:,-1] = self.scores['final']
 
         for n in range(n_x-2, -1, -1):
@@ -239,6 +239,6 @@ class HMM(object):
         y_hat = state_posteriors.argmax(axis=0)
         
         if decode_states:
-            y_hat = [self.hmm.pos_to_state[y] for y in y_hat]
+            y_hat = [self.pos_to_state[y] for y in y_hat]
             
         return y_hat
