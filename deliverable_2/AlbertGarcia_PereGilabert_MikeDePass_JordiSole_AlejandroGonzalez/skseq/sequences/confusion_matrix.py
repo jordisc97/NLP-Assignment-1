@@ -1,7 +1,7 @@
 import sys
 import numpy as np
-from skseq.util.my_math_utils import *
-from itertools import izip
+# from skseq.util.my_math_utils import *
+# from itertools import izip
 import operator
 import pdb
 

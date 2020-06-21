@@ -3,3 +3,4 @@ __pycache__/
 */data/*.csv
 submissions/
 deliverable_2/data/kaggle_ner/ner.csv
+*.pt
