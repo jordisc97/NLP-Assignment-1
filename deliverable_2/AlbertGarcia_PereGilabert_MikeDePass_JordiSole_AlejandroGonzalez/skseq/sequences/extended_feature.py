@@ -8,9 +8,6 @@ import ipdb
 # ----------
 class ExtendedFeatures(IDFeatures):
 
-    def __init__(self, dataset, bk_tree):
-        super(ExtendedFeatures, self).__init__(dataset)
-        self.bk_tree = bk_tree
     # ipdb.set_trace()
     def add_emission_features(self, sequence, pos, y, features):
         #ipdb.set_trace()
